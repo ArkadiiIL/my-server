@@ -8,25 +8,18 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.SecureRandom
-import java.util.concurrent.TimeUnit
 
 @RestController
 class MainController {
     @PostMapping("/upload")
     fun uploadData(@RequestBody data: ByteArray?): ResponseEntity<String> {
-        TimeUnit.MILLISECONDS.sleep(100)
+        generateRandomData(10)
         return ResponseEntity("Data received", HttpStatus.OK)
     }
 
     @GetMapping("/download")
     fun downloadRandomData(@RequestParam(name = "size", defaultValue = "1") size: Int): ResponseEntity<Resource> {
-        var currentSize = size
-        if (currentSize > MAX_SIZE_MB) {
-            currentSize = MAX_SIZE_MB
-        }
-
-        val dataSize = currentSize * 1024 * 1024
-        val data = generateRandomData(dataSize)
+        val data = generateRandomData(size)
 
         val resource = ByteArrayResource(data)
 
@@ -42,7 +35,13 @@ class MainController {
     }
 
     private fun generateRandomData(size: Int): ByteArray {
-        val data = ByteArray(size)
+        var currentSize = size
+
+        if (currentSize > MAX_SIZE_MB) currentSize = MAX_SIZE_MB
+        else if (currentSize <= 0) currentSize = NORMAL_SIZE_MB
+
+        val dataSize = currentSize * 1024 * 1024
+        val data = ByteArray(dataSize)
         val random = SecureRandom()
         random.nextBytes(data)
         return data
@@ -50,5 +49,6 @@ class MainController {
 
     companion object {
         private const val MAX_SIZE_MB = 100
+        private const val NORMAL_SIZE_MB = 10
     }
 }
