@@ -8,11 +8,13 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.SecureRandom
+import java.util.concurrent.TimeUnit
 
 @RestController
 class MainController {
     @PostMapping("/upload")
     fun uploadData(@RequestBody data: ByteArray?): ResponseEntity<String> {
+        TimeUnit.MILLISECONDS.sleep(100)
         return ResponseEntity("Data received", HttpStatus.OK)
     }
 
